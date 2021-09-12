@@ -1,12 +1,7 @@
-import { useCallback, useContext } from 'react'
-import EditorContext from './EditorContext'
+import { newDocument, saveDocument, useEditor } from './state'
 
 export default function Toolbar() {
-  const ctx = useContext(EditorContext)
-
-  const save = useCallback(() => {
-    console.log(ctx.text)
-  }, [ctx])
+  const doc = useEditor()
 
   // use styled components
   return (
@@ -25,9 +20,20 @@ export default function Toolbar() {
           backgroundColor: '#bbb',
           color: '#111',
         }}
-        onClick={save}
+        onClick={() => saveDocument(doc)}
       >
         Save
+      </button>
+      <button
+        style={{
+          borderRadius: '0px',
+          border: '1px solid #999',
+          backgroundColor: '#bbb',
+          color: '#111',
+        }}
+        onClick={() => newDocument()}
+      >
+        New
       </button>
     </div>
   )

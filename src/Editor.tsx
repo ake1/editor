@@ -1,26 +1,32 @@
-import { useCallback, useContext } from 'react'
+import { useCallback, useEffect } from 'react'
 import 'trix/dist/trix'
 import 'trix/dist/trix.css'
 import { Editor as TEditor, TrixEditor } from 'react-trix'
-import EditorContext from './EditorContext'
+import { doneLoading, setContent, setEditorRef, useSnap } from './state'
 
 export default function Editor() {
-  const ctx = useContext(EditorContext)
+  const snap = useSnap()
+
+  useEffect(() => {
+    if (!snap.loadDoc) return
+    const e = snap.editorRef as any
+    e.loadJSON({ document: [] })
+    e.insertHTML(snap.doc.content)
+    doneLoading()
+  }, [snap.doc.content, snap.editorRef, snap.loadDoc])
 
   const onEditorReady = useCallback(
-    (editor: TEditor) => {
-      editor.insertString(ctx.html ?? ctx.text ?? '')
+    (teditor: TEditor) => {
+      const e = teditor as any
+      e.insertHTML(snap.doc ? snap.doc.content : '')
+      setEditorRef(teditor)
     },
-    [ctx],
+    [snap.doc],
   )
 
-  const onChange = useCallback(
-    (html: string, text: string) => {
-      ctx.html = html
-      ctx.text = text
-    },
-    [ctx],
-  )
+  const onChange = useCallback((html: string) => {
+    setContent(html)
+  }, [])
 
   return (
     <>
