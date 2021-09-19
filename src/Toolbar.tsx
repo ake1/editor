@@ -48,8 +48,11 @@ export default function Toolbar() {
           color="inherit"
           startIcon={<Save />}
           onClick={async () => {
-            await saveDocument()
-            snacks.send({ msg: 'Document saved', color: 'success' })
+            const updated = await saveDocument()
+            snacks.send({
+              msg: updated ? 'Document updated' : 'Document saved',
+              color: 'success',
+            })
           }}
         >
           Save

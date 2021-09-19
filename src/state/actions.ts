@@ -22,13 +22,16 @@ export async function saveDocument(doc?: SomeDoc) {
     state.doc.title = defaultTitle
   }
 
-  if (isSaved(toSave)) {
+  const saved = isSaved(toSave)
+
+  if (saved) {
     await api.update(toSave)
   } else {
     const id = await api.create(toSave)
     state.doc._id = id
   }
   await loadDocuments()
+  return saved
 }
 
 export async function deleteDocument(id?: string) {
