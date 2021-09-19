@@ -1,40 +1,21 @@
-import { useCallback, useEffect } from 'react'
-import 'trix/dist/trix'
-import 'trix/dist/trix.css'
-import { Editor as TEditor, TrixEditor } from 'react-trix'
-import { doneLoading, setContent, setEditorRef, useSnap } from './state'
+import { Box, Paper } from '@material-ui/core'
+import { useCallback } from 'react'
+import ReactQuill from 'react-quill'
+import 'react-quill/dist/quill.snow.css'
+import { setContent, useSnap } from './state'
 
 export default function Editor() {
   const snap = useSnap()
 
-  useEffect(() => {
-    if (!snap.loadDoc) return
-    const e = snap.editorRef as any
-    e.loadJSON({ document: [] })
-    e.insertHTML(snap.doc.content)
-    doneLoading()
-  }, [snap.doc.content, snap.editorRef, snap.loadDoc])
-
-  const onEditorReady = useCallback(
-    (teditor: TEditor) => {
-      const e = teditor as any
-      e.insertHTML(snap.doc ? snap.doc.content : '')
-      setEditorRef(teditor)
-    },
-    [snap.doc],
-  )
-
-  const onChange = useCallback((html: string) => {
-    setContent(html)
+  const onChange = useCallback((content: string) => {
+    setContent(content)
   }, [])
 
   return (
-    <>
-      <TrixEditor
-        onChange={onChange}
-        onEditorReady={onEditorReady}
-        mergeTags={[]}
-      />
-    </>
+    <Paper>
+      <ReactQuill value={snap.doc.content} onChange={onChange}>
+        <Box height={600} />
+      </ReactQuill>
+    </Paper>
   )
 }

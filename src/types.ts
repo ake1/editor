@@ -1,13 +1,10 @@
-import { Editor as TrixEditor } from 'react-trix'
-
 export interface State {
-  editorRef: TrixEditor | null
   doc: SomeDoc
-  docs: SlimDoc[]
+  availableDocs: DocMeta[]
   loadDoc: boolean
 }
 
-export interface SlimDoc {
+export interface DocMeta {
   _id: string
   title: string
 }

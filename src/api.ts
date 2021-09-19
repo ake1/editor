@@ -1,7 +1,7 @@
 import { UnsavedDoc, SavedDoc } from './types'
 
-// const url = 'http://localhost:1234/editor'
-const url = 'https://jsramverk-editor-rigi21.azurewebsites.net/editor'
+const url = 'http://localhost:1234/editor'
+// const url = 'https://jsramverk-editor-rigi21.azurewebsites.net/editor'
 
 export async function create(body: UnsavedDoc): Promise<string> {
   const ret = await fetch(url, {
