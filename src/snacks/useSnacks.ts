@@ -16,7 +16,7 @@ export function useSnacks() {
       ctx.setSnacks([...ctx.snacks, snack])
 
       setTimeout(() => {
-        if (!mounted) return
+        if (mounted) return
         ctx.setSnacks(ctx.snacks.filter((s) => s === snack))
       }, snack.timeout ?? 3_000)
     },
