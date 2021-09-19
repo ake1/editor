@@ -3,6 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "homepage": ".",
+  "scripts": {
+    "start": "serve build",
+    "dev": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
   "dependencies": {
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
@@ -26,13 +33,6 @@
     "valtio": "^1.2.3",
     "web-vitals": "^2.1.0"
   },
-  "scripts": {
-    "start": "serve build",
-    "dev": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -50,5 +50,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "msw": "^0.35.0"
   }
 }
