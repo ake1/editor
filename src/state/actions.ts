@@ -11,6 +11,11 @@ export function setTitle(title: string) {
   state.doc.title = title
 }
 
+export function setDoc(doc: SomeDoc) {
+  state.doc.content = doc.content
+  state.doc.title = doc.title
+}
+
 export async function saveDocument(doc?: SomeDoc) {
   const snap = snapshot(state)
   const toSave = { ...(doc ?? snap.doc) }

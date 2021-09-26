@@ -16,10 +16,12 @@ export interface UnsavedDoc {
 
 export interface SavedDoc extends UnsavedDoc {
   _id: string
+  updated: number
 }
 
 export interface SomeDoc extends UnsavedDoc {
   _id?: string
+  updated?: number
 }
 
 export function isSaved(doc: SomeDoc): doc is SavedDoc {
