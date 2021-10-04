@@ -1,4 +1,4 @@
-import { createContext, ReactElement, useState } from 'react'
+import { createContext, ReactElement, useEffect, useState } from 'react'
 import Snacks from './Snacks'
 import { Snack, State } from './types'
 
@@ -8,9 +8,17 @@ export const SnackProvider = (props: {
   children: ReactElement | ReactElement[]
 }) => {
   const [snacks, setSnacks] = useState<Snack[]>([])
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    return () => {
+      setMounted(false)
+    }
+  }, [])
 
   return (
-    <SnackContext.Provider value={{ snacks, setSnacks }}>
+    <SnackContext.Provider value={{ snacks, setSnacks, mounted }}>
       {props.children}
       <Snacks />
     </SnackContext.Provider>

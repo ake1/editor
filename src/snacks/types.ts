@@ -1,4 +1,4 @@
-import { AlertColor } from '@material-ui/core'
+import { AlertColor } from '@mui/material'
 
 export interface Snack {
   msg: string
@@ -9,4 +9,5 @@ export interface Snack {
 export interface State {
   snacks: Snack[]
   setSnacks: (snacks: Snack[]) => void
+  mounted: boolean
 }
