@@ -1,4 +1,4 @@
-import { Box, Paper } from '@material-ui/core'
+import { Box, Paper } from '@mui/material'
 import { useCallback } from 'react'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
@@ -7,7 +7,7 @@ import useSocketIO from './useSocketIO'
 
 export default function Editor() {
   const snap = useSnap()
-  useSocketIO('http://localhost:1234')
+  useSocketIO('/')
 
   const onChange = useCallback((content: string) => {
     setContent(content)

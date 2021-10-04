@@ -1,5 +1,5 @@
 import * as api from '../api'
-import { isSaved, SomeDoc } from '../types'
+import { isSaved, SomeDoc, User } from '../types'
 import { state } from '.'
 import { snapshot } from 'valtio'
 
@@ -73,4 +73,17 @@ export function newDocument() {
     content: '',
   }
   state.loadDoc = true
+}
+
+export function setUser(user: User | null) {
+  state.user = user
+}
+
+export function togglePermission(id: string) {
+  if (!state.doc.hasPermission) state.doc.hasPermission = [id]
+  else {
+    const idx = state.doc.hasPermission.indexOf(id)
+    if (idx === -1) state.doc.hasPermission.push(id)
+    else state.doc.hasPermission.splice(idx, 1)
+  }
 }

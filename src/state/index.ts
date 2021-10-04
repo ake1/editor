@@ -9,6 +9,7 @@ export const state = proxy<State>({
     content: '',
   },
   loadDoc: false,
+  user: null,
 })
 
 export function useSnap() {

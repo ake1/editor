@@ -9,9 +9,15 @@ import App from './App'
 import { setupServer } from 'msw/node'
 import { rest } from 'msw'
 
+jest.mock('./useSocketIO')
+
 const server = setupServer()
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen({
+    onUnhandledRequest: 'warn',
+  })
+})
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
@@ -28,6 +34,14 @@ function getApp() {
 
 test('create new document', async () => {
   server.use(
+    // get user
+    rest.get('/user/me', (_req, res, ctx) => {
+      return res(ctx.json({ username: 'you', _id: 'asdf' }))
+    }),
+    // get user
+    rest.get('/user', (_req, res, ctx) => {
+      return res(ctx.json([]))
+    }),
     // initial listing
     rest.get('/editor', (_req, res, ctx) => {
       return res.once(ctx.json([]))
@@ -47,6 +61,7 @@ test('create new document', async () => {
   fireEvent.change(a.getTitle(), { target: { value: 'My Title' } })
   await waitFor(() => expect(a.getTitle().value).toEqual('My Title'))
 
+  await waitFor(() => expect(a.getEditor()).toBeTruthy())
   fireEvent.change(a.getEditor(), { target: { value: 'My Content' } })
   await waitFor(() => expect(a.getEditor().value).toEqual('My Content'))
 
@@ -56,7 +71,27 @@ test('create new document', async () => {
 
 test('open a document and update it', async () => {
   server.use(
+    // get user
+    rest.get('/user/me', (_req, res, ctx) => {
+      return res(ctx.json({ username: 'you', _id: 'asdf' }))
+    }),
+    // get user
+    rest.get('/user', (_req, res, ctx) => {
+      return res(ctx.json([]))
+    }),
     // initial listing
+    rest.get('/editor', (_req, res, ctx) => {
+      return res.once(
+        ctx.json([
+          {
+            _id: '123',
+            title: 'My Title',
+          },
+        ]),
+      )
+    }),
+
+    // open document listings
     rest.get('/editor', (_req, res, ctx) => {
       return res.once(
         ctx.json([
@@ -99,6 +134,7 @@ test('open a document and update it', async () => {
 
   const a = getApp()
 
+  await waitFor(() => expect(a.getOpen()).toBeTruthy())
   fireEvent.click(a.getOpen())
   await waitFor(() => a.getByRole('dialog'))
   await waitFor(() => a.getByText('My Title'))
@@ -120,7 +156,27 @@ test('open a document and update it', async () => {
 
 test('open a document and delete it', async () => {
   server.use(
+    // get user
+    rest.get('/user/me', (_req, res, ctx) => {
+      return res(ctx.json({ username: 'you', _id: 'asdf' }))
+    }),
+    // get user
+    rest.get('/user', (_req, res, ctx) => {
+      return res(ctx.json([]))
+    }),
     // initial listing
+    rest.get('/editor', (_req, res, ctx) => {
+      return res.once(
+        ctx.json([
+          {
+            _id: '123',
+            title: 'My Title',
+          },
+        ]),
+      )
+    }),
+
+    // open doc listings
     rest.get('/editor', (_req, res, ctx) => {
       return res.once(
         ctx.json([
@@ -163,6 +219,7 @@ test('open a document and delete it', async () => {
 
   const a = getApp()
 
+  await waitFor(() => expect(a.getOpen()).toBeTruthy())
   fireEvent.click(a.getOpen())
   await waitFor(() => a.getByRole('dialog'))
   await waitFor(() => a.getByText('My Title'))
