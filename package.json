@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "homepage": ".",
+  "proxy": "http://localhost:1234",
   "scripts": {
     "start": "serve build",
     "dev": "react-scripts start",
+    "dev:tls": "HTTPS=true SSL_CRT_FILE=./tls/localhost.pem SSL_KEY_FILE=./tls/localhost-key.pem yarn dev",
     "build": "react-scripts build",
     "test": "react-scripts test --coverage",
     "eject": "react-scripts eject"
@@ -13,26 +15,17 @@
   "dependencies": {
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
-    "@material-ui/core": "^5.0.0-beta.5",
-    "@mui/icons-material": "^5.0.0",
-    "@mui/material": "^5.0.0",
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^12.1.0",
-    "@testing-library/user-event": "^13.2.1",
-    "@types/jest": "^27.0.1",
-    "@types/node": "^16.9.3",
-    "@types/react": "^17.0.21",
-    "@types/react-dom": "^17.0.0",
+    "@mui/icons-material": "^5.0.1",
+    "@mui/material": "^5.0.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-quill": "^2.0.0-beta.4",
     "react-scripts": "4.0.3",
     "react-trix": "^0.9.0",
-    "serve": "^12.0.1",
     "socket.io-client": "^4.2.0",
-    "typescript": "^4.4.3",
     "use-debounce": "^7.0.0",
-    "valtio": "^1.2.3",
+    "valtio": "^1.2.4",
+    "serve": "^12.0.1",
     "web-vitals": "^2.1.0"
   },
   "eslintConfig": {
@@ -54,6 +47,14 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^12.1.2",
+    "@testing-library/user-event": "^13.2.1",
+    "@types/jest": "^27.0.2",
+    "@types/node": "^16.10.2",
+    "@types/react": "^17.0.27",
+    "@types/react-dom": "^17.0.0",
+    "typescript": "^4.4.3",
     "msw": "^0.35.0"
   }
 }
