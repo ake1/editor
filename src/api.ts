@@ -54,14 +54,6 @@ export async function deleteOne(id: string) {
   }).then(tmpName)
 }
 
-export async function signUp(user: { username: string; password: string }) {
-  const body = new URLSearchParams(user)
-  return fetch('/user', {
-    method: 'POST',
-    body,
-  }).then(tmpName)
-}
-
 export async function signIn(user: { username: string; password: string }) {
   const body = new URLSearchParams(user)
   return fetch('/login', {
@@ -75,10 +67,6 @@ export async function signOut() {
   return fetch('/logout', {
     ...cookie,
   }).then(tmpName)
-}
-
-export async function getUsers(): Promise<User[]> {
-  return fetch('/user', { ...cookie }).then(tmpName)
 }
 
 export async function getUser(): Promise<User> {

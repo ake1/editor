@@ -1,3 +1,4 @@
+import { useQuery } from '@apollo/client'
 import { Clear, Person } from '@mui/icons-material'
 import {
   Avatar,
@@ -16,8 +17,9 @@ import {
 } from '@mui/material'
 import { blue } from '@mui/material/colors'
 import { useCallback, useState } from 'react'
+import GET_USERS from './gql/get-users'
 import { togglePermission, useSnap } from './state'
-import useUsers from './useUsers'
+import { User } from './types'
 
 export interface SimpleDialogProps {
   open: boolean
@@ -28,7 +30,7 @@ export default function EditPermissions(props: SimpleDialogProps) {
   const snap = useSnap()
   const [filter, setFilter] = useState('')
   const { onClose, open } = props
-  const users = useUsers()
+  const { data } = useQuery<{ users: User[] }>(GET_USERS)
 
   const hasPermission = useCallback(
     (id) => {
@@ -62,7 +64,7 @@ export default function EditPermissions(props: SimpleDialogProps) {
       </Paper>
 
       <List sx={{ pt: 0 }}>
-        {users
+        {data?.users
           ?.filter((user) => user.username.includes(filter))
           ?.filter((user) => user.username !== snap.user?.username)
           .map((user) => (

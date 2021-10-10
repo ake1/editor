@@ -1,6 +1,7 @@
 import { Box, Container } from '@mui/material'
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import * as api from './api'
+import Apollo from './Apollo'
 import Editor from './Editor'
 import Login from './Login'
 import { SnackProvider } from './snacks'
@@ -22,19 +23,23 @@ export default function App() {
   }, [])
 
   return (
-    <SnackProvider>
-      <Container>
-        {snap.user ? (
-          <Box display="flex" flexDirection="row" gap={1} padding={2}>
-            <Box display="flex" flexGrow={1} flexDirection="column" gap={1}>
-              <Toolbar />
-              <Editor />
+    <Apollo>
+      <SnackProvider>
+        <Container>
+          {snap.user ? (
+            <Box display="flex" flexDirection="row" gap={1} padding={2}>
+              <Box display="flex" flexGrow={1} flexDirection="column" gap={1}>
+                <Suspense fallback={'Loading...'}>
+                  <Toolbar />
+                </Suspense>
+                <Editor />
+              </Box>
             </Box>
-          </Box>
-        ) : (
-          <Login />
-        )}
-      </Container>
-    </SnackProvider>
+          ) : (
+            <Login />
+          )}
+        </Container>
+      </SnackProvider>
+    </Apollo>
   )
 }

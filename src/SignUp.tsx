@@ -1,6 +1,7 @@
+import { useMutation } from '@apollo/client'
 import { Box, Button, TextField, Typography } from '@mui/material'
-import { useCallback, useState } from 'react'
-import * as api from './api'
+import { useEffect, useRef, useState } from 'react'
+import SIGN_UP from './gql/sign-up'
 import { useSnacks } from './snacks'
 
 interface Props {
@@ -12,14 +13,37 @@ export default function SignUp(props: Props) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const signUp = useCallback(async () => {
-    try {
-      const r = await api.signUp({ username, password })
-      if (r) props.doneSignUp(false)
-    } catch (e) {
-      snacks.send({ msg: 'Sign up failed', color: 'error' })
+  const [signUpMutation, { error, data }] = useMutation<
+    {
+      _id: string
+      username: string
+    },
+    {
+      username: string
+      password: string
     }
-  }, [password, props, snacks, username])
+  >(SIGN_UP, {
+    variables: {
+      username,
+      password,
+    },
+  })
+
+  const sentError = useRef(false)
+  const resetError = () => (sentError.current = false)
+
+  useEffect(() => {
+    if (!error) return
+    if (sentError.current) return
+    sentError.current = true
+    snacks.send({ msg: 'Sign up failed', color: 'error' })
+  }, [error, snacks])
+
+  useEffect(() => {
+    if (data) {
+      props.doneSignUp(false)
+    }
+  }, [data, props])
 
   return (
     <Box component="form" display="flex" flexDirection="column">
@@ -55,7 +79,10 @@ export default function SignUp(props: Props) {
         <Button
           sx={{ mt: 1, flexGrow: 1 }}
           variant="contained"
-          onClick={signUp}
+          onClick={() => {
+            resetError()
+            signUpMutation()
+          }}
         >
           Sign up
         </Button>

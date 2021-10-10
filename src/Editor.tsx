@@ -7,7 +7,7 @@ import useSocketIO from './useSocketIO'
 
 export default function Editor() {
   const snap = useSnap()
-  useSocketIO('/')
+  // useSocketIO('/')
 
   const onChange = useCallback((content: string) => {
     setContent(content)
