@@ -1,12 +1,17 @@
 import { gql } from '@apollo/client'
 
-const GET_USERS = gql`
+export type GetUserData = {
+  users: {
+    id: string
+    username: string
+  }[]
+}
+
+export const GET_USERS = gql`
   query {
     users {
-      _id
+      id
       username
     }
   }
 `
-
-export default GET_USERS

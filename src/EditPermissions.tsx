@@ -17,9 +17,8 @@ import {
 } from '@mui/material'
 import { blue } from '@mui/material/colors'
 import { useCallback, useState } from 'react'
-import GET_USERS from './gql/get-users'
+import { GetUserData, GET_USERS } from './gql/get-users'
 import { togglePermission, useSnap } from './state'
-import { User } from './types'
 
 export interface SimpleDialogProps {
   open: boolean
@@ -30,7 +29,7 @@ export default function EditPermissions(props: SimpleDialogProps) {
   const snap = useSnap()
   const [filter, setFilter] = useState('')
   const { onClose, open } = props
-  const { data } = useQuery<{ users: User[] }>(GET_USERS)
+  const { data } = useQuery<GetUserData>(GET_USERS)
 
   const hasPermission = useCallback(
     (id) => {
@@ -77,9 +76,9 @@ export default function EditPermissions(props: SimpleDialogProps) {
               <ListItemText primary={user.username} />
               <Switch
                 onChange={() => {
-                  togglePermission(user._id)
+                  togglePermission(user.id)
                 }}
-                checked={hasPermission(user._id)}
+                checked={hasPermission(user.id)}
               ></Switch>
             </ListItem>
           ))}

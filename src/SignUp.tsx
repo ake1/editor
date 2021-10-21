@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client'
 import { Box, Button, TextField, Typography } from '@mui/material'
 import { useEffect, useRef, useState } from 'react'
-import SIGN_UP from './gql/sign-up'
+import { SignUpData, SignUpVariables, SIGN_UP } from './gql/sign-up'
 import { useSnacks } from './snacks'
 
 interface Props {
@@ -14,14 +14,8 @@ export default function SignUp(props: Props) {
   const [password, setPassword] = useState('')
 
   const [signUpMutation, { error, data }] = useMutation<
-    {
-      _id: string
-      username: string
-    },
-    {
-      username: string
-      password: string
-    }
+    SignUpData,
+    SignUpVariables
   >(SIGN_UP, {
     variables: {
       username,

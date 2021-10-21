@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react'
 import socketIOClient from 'socket.io-client'
 import { useDebouncedCallback } from 'use-debounce/lib'
-import { setDoc, useSnap } from './state'
+import { setDoc, setWs, useSnap } from './state'
 import { isSaved, SavedDoc, SomeDoc } from './types'
 
 function sameDoc(doc1: SomeDoc | null, doc2: SomeDoc | null) {
@@ -11,10 +11,22 @@ function sameDoc(doc1: SomeDoc | null, doc2: SomeDoc | null) {
   return true
 }
 
+function createSocket(url: string) {
+  return socketIOClient(url, {
+    path: '/document-updates',
+    transports: ['websocket'],
+  })
+}
+
 export default function useSocketIO(url: string) {
   const snap = useSnap()
   const latestUpdate = useRef<SavedDoc | null>(null)
-  const client = useRef(socketIOClient(url))
+
+  useEffect(() => {
+    if (!snap.ws) setWs(createSocket(url))
+  }, [snap.ws, url])
+
+  const client = snap.ws
 
   useEffect(() => {
     if (!latestUpdate.current && snap.doc.updated) {
@@ -25,7 +37,6 @@ export default function useSocketIO(url: string) {
   const onDoc = useCallback(
     (doc: SavedDoc) => {
       if (!snap.doc.updated) return
-      if (doc.updated <= snap.doc.updated) return
       if (sameDoc(doc, snap.doc)) return
       latestUpdate.current = doc
       setDoc(doc)
@@ -35,26 +46,28 @@ export default function useSocketIO(url: string) {
 
   const emitDoc = useDebouncedCallback((doc: SavedDoc) => {
     if (!sameDoc(latestUpdate.current, doc)) {
-      client.current.emit('doc', doc)
+      client?.emit('doc', doc)
     }
   }, 1000)
 
   useEffect(() => {
     if (!client) return
-    const c = client.current
+    const c = client
     c.on('doc', onDoc)
-    return () => void c.off('doc', onDoc)
+    return () => {
+      c.off('doc', onDoc)
+    }
   }, [client, onDoc])
 
   useEffect(() => {
-    if (!client || !snap.doc._id) return
-    const c = client.current
-    c.emit('create', snap.doc._id)
-    return () => void c.emit('leave', snap.doc._id)
-  }, [snap.doc._id])
+    if (!client || !snap.doc.id) return
+    const c = client
+    c.emit('create', snap.doc.id)
+    return () => void c.emit('leave', snap.doc.id)
+  }, [client, snap.doc.id])
 
   useEffect(() => {
     if (!client || !isSaved(snap.doc)) return
     emitDoc(snap.doc)
-  }, [snap.doc, emitDoc, snap.doc.title, snap.doc.content])
+  }, [snap.doc, emitDoc, snap.doc.title, snap.doc.content, client])
 }

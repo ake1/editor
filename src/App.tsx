@@ -1,5 +1,6 @@
 import { Box, Container } from '@mui/material'
 import { Suspense, useEffect } from 'react'
+import { Route, useHistory } from 'react-router-dom'
 import * as api from './api'
 import Apollo from './Apollo'
 import Editor from './Editor'
@@ -10,6 +11,7 @@ import Toolbar from './Toolbar'
 
 export default function App() {
   const snap = useSnap()
+  const history = useHistory()
 
   useEffect(() => {
     api
@@ -19,8 +21,9 @@ export default function App() {
       })
       .catch(() => {
         setUser(null)
+        history.push('/login')
       })
-  }, [])
+  }, [history])
 
   return (
     <Apollo>
@@ -35,9 +38,11 @@ export default function App() {
                 <Editor />
               </Box>
             </Box>
-          ) : (
+          ) : null}
+
+          <Route path="/login">
             <Login />
-          )}
+          </Route>
         </Container>
       </SnackProvider>
     </Apollo>

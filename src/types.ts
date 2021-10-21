@@ -1,40 +1,51 @@
-export type WithoutId<T> = Omit<T, '_id'>
-export type With<T> = T & { _id: string }
+import { ApolloClient, InMemoryCache } from '@apollo/client'
+import { Socket } from 'socket.io-client'
+
+export enum DocType {
+  JAVASCRIPT = 'JAVASCRIPT',
+  HTML = 'HTML',
+}
+
+export type WithoutId<T> = Omit<T, 'id'>
+export type With<T> = T & { id: string }
 
 export interface User {
-  _id: string
+  id: string
   username: string
 }
 
 export interface State {
   doc: SomeDoc
-  availableDocs: DocMeta[]
   loadDoc: boolean
   user: User | null
+  gqlClient: ApolloClient<InMemoryCache> | null
+  ws: Socket | null
 }
 
 export interface DocMeta {
-  _id: string
+  id: string
   title: string
 }
 
 export interface UnsavedDoc {
   title: string
   content: string
+  type: DocType
+  comments: (string | null)[]
 }
 
 export interface SavedDoc extends UnsavedDoc {
-  _id: string
-  updated: number
+  id: string
+  updated: string
   hasPermission: string[]
 }
 
 export interface SomeDoc extends UnsavedDoc {
-  _id?: string
-  updated?: number
+  id?: string
+  updated?: string
   hasPermission?: string[]
 }
 
 export function isSaved(doc: SomeDoc): doc is SavedDoc {
-  return !!doc._id
+  return !!doc.id
 }

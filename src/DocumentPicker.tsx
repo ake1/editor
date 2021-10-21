@@ -1,6 +1,9 @@
+import { useQuery } from '@apollo/client'
 import { Clear, Description } from '@mui/icons-material'
 import {
   Avatar,
+  Box,
+  CircularProgress,
   Dialog,
   DialogTitle,
   IconButton,
@@ -12,27 +15,31 @@ import {
   Paper,
 } from '@mui/material'
 import { blue } from '@mui/material/colors'
-import { useCallback, useState } from 'react'
-import { loadDocument, useSnap } from './state'
-import { DocMeta } from './types'
+import { useCallback, useEffect, useState } from 'react'
+import { GetDocumentsData, GET_DOCUMENTS } from './gql/get-documents'
+import { loadDocument } from './state'
 
 export interface SimpleDialogProps {
   open: boolean
-  onClose: (value: DocMeta) => void
+  onClose: (id: string) => void
 }
 
 export default function DocumentPicker(props: SimpleDialogProps) {
-  const snap = useSnap()
   const [filter, setFilter] = useState('')
   const { onClose, open } = props
+  const { loading, data, refetch } = useQuery<GetDocumentsData>(GET_DOCUMENTS)
+
+  useEffect(() => {
+    refetch()
+  }, [refetch])
 
   const clearFilter = useCallback(() => {
     setFilter('')
   }, [])
 
-  const handleListItemClick = async (value: DocMeta) => {
-    await loadDocument(value._id)
-    onClose(value)
+  const handleListItemClick = async (id: string) => {
+    await loadDocument(id)
+    onClose(id)
   }
 
   return (
@@ -54,22 +61,29 @@ export default function DocumentPicker(props: SimpleDialogProps) {
       </Paper>
 
       <List sx={{ pt: 0 }}>
-        {snap.availableDocs
-          .filter((d) => d.title.includes(filter))
-          .map((doc) => (
-            <ListItem
-              button
-              onClick={() => handleListItemClick(doc)}
-              key={doc._id}
-            >
-              <ListItemAvatar>
-                <Avatar sx={{ bgcolor: blue[100], color: blue[600] }}>
-                  <Description />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={doc.title} />
-            </ListItem>
-          ))}
+        {loading ? (
+          <Box textAlign="center">
+            <CircularProgress />
+          </Box>
+        ) : null}
+        {data?.documents
+          ? data.documents
+              ?.filter((d) => d.title.includes(filter))
+              .map((doc) => (
+                <ListItem
+                  button
+                  onClick={() => handleListItemClick(doc.id)}
+                  key={doc.id}
+                >
+                  <ListItemAvatar>
+                    <Avatar sx={{ bgcolor: blue[100], color: blue[600] }}>
+                      <Description />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary={doc.title} />
+                </ListItem>
+              ))
+          : null}
       </List>
     </Dialog>
   )
